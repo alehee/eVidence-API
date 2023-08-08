@@ -1,8 +1,16 @@
+using Microsoft.AspNetCore.Mvc;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+});
 
 var app = builder.Build();
 
@@ -14,4 +22,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+app.Run("https://localhost:7171");
