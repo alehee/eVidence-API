@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using eVidence_API.Models;
+using eVidence_API.Models.Context;
+using eVidence_API.Models.Helpers;
+using eVidence_API.Context;
 
 namespace eVidence_API.Controllers
 {
@@ -15,21 +17,41 @@ namespace eVidence_API.Controllers
         }
 
         [HttpGet, Route("check")]
-        public CardAssignation Check(string keycard)
+        public Response Check(string keycard)
         {
-            return new CardAssignation { Type = Enums.CardType.Unsigned };
+            // TODO
+            return null;
         }
 
         [HttpPost, Route("register")]
-        public Response Register(string keycard, string name, string surname, int? department = null)
+        public Response Register(string keycard, string name, string surname, int departmentId)
         {
-            return new Response { Result = true };
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    context.Accounts.Add(new Account { 
+                        Keycard = keycard, 
+                        Name = name, 
+                        Surname = surname, 
+                        Department = context.Departments.Where(a => a.Id == departmentId).Single()
+                    });
+                    context.SaveChanges();
+                } catch (Exception ex)
+                {
+                    _logger.LogError(ex, "AccountController, Register", null);
+                    return new Response { Success = false };
+                }
+            }
+
+            return new Response();
         }
 
         [HttpPost, Route("login")]
-        public Account Login(string keycard)
+        public Response Login(string keycard)
         {
-            return new Account { Id = 1, Name = "Krzysztof", Surname = "Cha³ka", Department = new Department { Id = 2, Entity = new Entity { Id = 1, Name = "Decathlon" } } };
+            // TODO
+            return null;
         }
     }
 }

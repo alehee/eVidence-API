@@ -1,11 +1,13 @@
-﻿using eVidence_API.Models;
+﻿using eVidence_API.Models.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace eVidence_API.Context
 {
     public class ApplicationDbContext : DbContext
     {
-        public DbSet<Entity> Entities { get; set; }
+        public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<Department> Departments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
