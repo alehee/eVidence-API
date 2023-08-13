@@ -27,7 +27,7 @@ namespace eVidence_API.Controllers
                 try
                 {
                     if (context.Groups.Where(a => a.Name == name).Any())
-                        return new Response { Result = "Group with that name already exists" };
+                        return new Response { Success = false, Result = "Group with that name already exists" };
 
                     context.Groups.Add(new Group { Name = name });
                     context.SaveChanges();
@@ -50,7 +50,7 @@ namespace eVidence_API.Controllers
                     var groups = context.Groups.Where(a => a.Id == id);
 
                     if (!groups.Any())
-                        return new Response { Result = "Group with this id not exists" };
+                        return new Response { Success = false, Result = "Group with this id not exists" };
 
                     return new Response { Result = groups.Single() };
                 }
@@ -72,7 +72,7 @@ namespace eVidence_API.Controllers
                     var groups = context.Groups.Where(a => a.Id == id);
 
                     if (!groups.Any())
-                        return new Response { Result = "Group with this id not exists" };
+                        return new Response { Success = false, Result = "Group with this id not exists" };
 
                     context.Groups.Where(a => a.Id == id).Single().Name = name;
                     context.SaveChanges();
@@ -97,9 +97,67 @@ namespace eVidence_API.Controllers
                     var groups = context.Groups.Where(a => a.Id == id);
 
                     if (!groups.Any())
-                        return new Response { Result = "Group with this id not exists" };
+                        return new Response { Success = false, Result = "Group with this id not exists" };
 
                     context.Groups.Remove(groups.Single());
+                    context.SaveChanges();
+
+                    return new Response();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
+        [HttpPost, Route("group/{id}/{departmentId}")]
+        public Response AddDepartmentToGroup(int id, int departmentId)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var groups = context.Groups.Where(a => a.Id == id);
+                    var departments = context.Departments.Where(a => a.Id == departmentId);
+
+                    if (!groups.Any())
+                        return new Response { Success = false, Result = "Group with this id not exists" };
+
+                    if (!departments.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    //context.Groups.Where(a => a.Id == id).Single().Departments.Add(departments.Single());
+                    context.SaveChanges();
+
+                    return new Response();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
+        [HttpDelete, Route("group/{id}/{departmentId}")]
+        public Response DeleteDepartmentFromGroup(int id, int departmentId)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var groups = context.Groups.Where(a => a.Id == id);
+                    var departments = context.Departments.Where(a => a.Id == departmentId);
+
+                    if (!groups.Any())
+                        return new Response { Success = false, Result = "Group with this id not exists" };
+
+                    if (!departments.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    //context.Groups.Where(a => a.Id == id).Single().Departments.Remove(departments.Single());
                     context.SaveChanges();
 
                     return new Response();
@@ -115,31 +173,98 @@ namespace eVidence_API.Controllers
 
         #region Department
         [HttpPost, Route("department/add")]
-        public Response AddDepartment(string name, int groupId)
+        public Response AddDepartment(string name)
         {
-            // TODO
-            return new Response { Success = false };
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    if (context.Departments.Where(a => a.Name == name).Any())
+                        return new Response { Success = false, Result = "Department with that name already exists" };
+
+                    context.Departments.Add(new Department { Name = name});
+                    context.SaveChanges();
+                    return new Response();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
         }
 
         [HttpGet, Route("department/{id}")]
         public Response GetDepartment(int id)
         {
-            // TODO
-            return new Response { Success = false };
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var departments = context.Departments.Where(a => a.Id == id);
+
+                    if (!departments.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    return new Response { Result = departments.Single() };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
         }
 
         [HttpPost, Route("department/{id}/edit")]
-        public Response EditDepartment(int id, string name, int groupId)
+        public Response EditDepartment(int id, string name)
         {
-            // TODO
-            return new Response { Success = false };
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var departments = context.Departments.Where(a => a.Id == id);
+
+                    if (!departments.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    var department = departments.Single();
+                    department.Name = name;
+                    context.SaveChanges();
+
+                    return new Response();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
         }
 
         [HttpDelete, Route("department/{id}")]
         public Response DeleteDepartment(int id)
         {
-            // TODO
-            return new Response { Success = false };
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var departments = context.Departments.Where(a => a.Id == id);
+
+                    if (!departments.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    context.Departments.Remove(departments.Single());
+                    context.SaveChanges();
+
+                    return new Response();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
         }
         #endregion
     }

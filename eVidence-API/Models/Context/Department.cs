@@ -6,13 +6,10 @@ namespace eVidence_API.Models.Context
     public class Department
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key, Column(Order = 0)]
+        [Key]
         public int Id { get; set; }
 
-        [Required, Column(Order = 1)]
-        public Group Group { get; set; }
-
-        [Required, Column(Order = 2)]
+        [Required]
         public string Name { get; set; }
     }
 }

@@ -13,5 +13,10 @@ namespace eVidence_API.Context
         {
             optionsBuilder.UseMySQL("server=localhost;database=evidence;uid=evidence;pwd=3Vidence;");
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            
+        }
     }
 }
