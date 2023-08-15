@@ -31,7 +31,7 @@ namespace eVidence_API.Migrations
 
                     b.HasIndex("GroupsId");
 
-                    b.ToTable("DepartmentGroup");
+                    b.ToTable("GroupDepartments", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Account", b =>

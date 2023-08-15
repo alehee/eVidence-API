@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace eVidence_API.Models.Context
 {
@@ -11,5 +12,9 @@ namespace eVidence_API.Models.Context
 
         [Required]
         public string Name { get; set; }
+
+
+        [JsonIgnore]
+        public ICollection<Group> Groups { get; set; }
     }
 }

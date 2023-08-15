@@ -16,7 +16,10 @@ namespace eVidence_API.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+            modelBuilder.Entity<Group>()
+                .HasMany(a => a.Departments)
+                .WithMany(a => a.Groups)
+                .UsingEntity(a => a.ToTable("GroupDepartments"));
         }
     }
 }

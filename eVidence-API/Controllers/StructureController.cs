@@ -4,6 +4,7 @@ using eVidence_API.Models.Helpers;
 using eVidence_API.Context;
 using System.Reflection;
 using System.Xml.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace eVidence_API.Controllers
 {
@@ -19,6 +20,23 @@ namespace eVidence_API.Controllers
         }
 
         #region Group
+        [HttpGet, Route("group")]
+        public Response GetGroups()
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    return new Response { Result = context.Groups.ToArray() };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
         [HttpPost, Route("group/add")]
         public Response AddGroup(string name)
         {
@@ -53,6 +71,28 @@ namespace eVidence_API.Controllers
                         return new Response { Success = false, Result = "Group with this id not exists" };
 
                     return new Response { Result = groups.Single() };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
+        [HttpGet, Route("group/{id}/departments")]
+        public Response GetGroupDepartments(int id)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var groups = context.Groups.Where(a => a.Id == id).Include("Departments");
+
+                    if (!groups.Any())
+                        return new Response { Success = false, Result = "Group with this id not exists" };
+
+                    return new Response { Result = groups.Single().Departments.ToArray() };
                 }
                 catch (Exception ex)
                 {
@@ -112,6 +152,8 @@ namespace eVidence_API.Controllers
             }
         }
 
+        /* GroupDepartments area */
+
         [HttpPost, Route("group/{id}/{departmentId}")]
         public Response AddDepartmentToGroup(int id, int departmentId)
         {
@@ -119,7 +161,7 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
-                    var groups = context.Groups.Where(a => a.Id == id);
+                    var groups = context.Groups.Where(a => a.Id == id).Include("Departments");
                     var departments = context.Departments.Where(a => a.Id == departmentId);
 
                     if (!groups.Any())
@@ -128,7 +170,7 @@ namespace eVidence_API.Controllers
                     if (!departments.Any())
                         return new Response { Success = false, Result = "Department with this id not exists" };
 
-                    //context.Groups.Where(a => a.Id == id).Single().Departments.Add(departments.Single());
+                    context.Groups.Where(a => a.Id == id).Include("Departments").Single().Departments.Add(departments.Single());
                     context.SaveChanges();
 
                     return new Response();
@@ -157,7 +199,7 @@ namespace eVidence_API.Controllers
                     if (!departments.Any())
                         return new Response { Success = false, Result = "Department with this id not exists" };
 
-                    //context.Groups.Where(a => a.Id == id).Single().Departments.Remove(departments.Single());
+                    context.Groups.Where(a => a.Id == id).Single().Departments.Remove(departments.Single());
                     context.SaveChanges();
 
                     return new Response();
@@ -172,6 +214,23 @@ namespace eVidence_API.Controllers
         #endregion
 
         #region Department
+        [HttpGet, Route("department")]
+        public Response GetDepartments()
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    return new Response { Result = context.Departments.ToArray() };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
         [HttpPost, Route("department/add")]
         public Response AddDepartment(string name)
         {
@@ -207,6 +266,28 @@ namespace eVidence_API.Controllers
                         return new Response { Success = false, Result = "Department with this id not exists" };
 
                     return new Response { Result = departments.Single() };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"StructureController, {MethodBase.GetCurrentMethod().Name}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
+        [HttpGet, Route("department/{id}/groups")]
+        public Response GetDepartmentGroups(int id)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var departments = context.Departments.Where(a => a.Id == id).Include("Groups");
+
+                    if (!departments.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    return new Response { Result = departments.Single().Groups.ToArray() };
                 }
                 catch (Exception ex)
                 {

@@ -11,8 +11,8 @@ using eVidence_API.Context;
 namespace eVidence_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230812154948_creat_init")]
-    partial class creat_init
+    [Migration("20230815141957_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,21 @@ namespace eVidence_API.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.21")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("DepartmentGroup", b =>
+                {
+                    b.Property<int>("DepartmentsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GroupsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DepartmentsId", "GroupsId");
+
+                    b.HasIndex("GroupsId");
+
+                    b.ToTable("GroupDepartments", (string)null);
+                });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Account", b =>
                 {
@@ -61,20 +76,13 @@ namespace eVidence_API.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnOrder(0);
-
-                    b.Property<int>("GroupId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnOrder(2);
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
 
                     b.ToTable("Departments");
                 });
@@ -83,17 +91,30 @@ namespace eVidence_API.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnOrder(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnOrder(1);
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("DepartmentGroup", b =>
+                {
+                    b.HasOne("eVidence_API.Models.Context.Department", null)
+                        .WithMany()
+                        .HasForeignKey("DepartmentsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eVidence_API.Models.Context.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Account", b =>
@@ -105,17 +126,6 @@ namespace eVidence_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Department");
-                });
-
-            modelBuilder.Entity("eVidence_API.Models.Context.Department", b =>
-                {
-                    b.HasOne("eVidence_API.Models.Context.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
                 });
 #pragma warning restore 612, 618
         }
