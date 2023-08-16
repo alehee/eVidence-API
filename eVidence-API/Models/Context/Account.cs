@@ -6,25 +6,24 @@ namespace eVidence_API.Models.Context
     public class Account
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key, Column(Order = 0)]
+        [Key]
         public int Id { get; set; }
 
-        [Required, Column(Order = 1)]
+        [Required]
         public Department Department { get; set; }
 
-        [Required, Column(Order = 2)]
+        [Required]
         public string Name { get; set; }
 
-        [Required, Column(Order = 3)]
+        [Required]
         public string Surname { get; set; }
 
-        [Required, Column(Order = 4)]
+        [Required]
         public string Keycard { get; set; }
 
-        [Required, Column(Order = 5)]
+        [Required]
         public DateTime CreatedAt { get; } = DateTime.Now;
 
-        [Column(Order = 6)]
         public DateTime? DeletedAt { get; set; } = null;
     }
 }
