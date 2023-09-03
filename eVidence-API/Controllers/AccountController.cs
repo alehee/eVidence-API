@@ -61,5 +61,22 @@ namespace eVidence_API.Controllers
 
             return new Response();
         }
+
+        [HttpGet, Route("{id}")]
+        public Response GetAccount(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    return new Response { Result = context.Accounts.Where(a => a.Id == id).Single() };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccountController, GetAccount", null);
+                return new Response { Success = false };
+            }
+        }
     }
 }
