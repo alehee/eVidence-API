@@ -22,7 +22,7 @@ namespace eVidence_API.Models.Context
         public string Keycard { get; set; }
 
         [Required]
-        public DateTime CreatedAt { get; } = DateTime.Now;
+        public DateTime CreatedAt { get; init; } = DateTime.Now;
 
         public DateTime? DeletedAt { get; set; } = null;
     }

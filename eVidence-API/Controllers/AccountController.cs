@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using eVidence_API.Models.Context;
 using eVidence_API.Models.Helpers;
 using eVidence_API.Context;
+using System.Xml.Linq;
+using eVidence_API.Enums;
 
 namespace eVidence_API.Controllers
 {
@@ -19,8 +21,21 @@ namespace eVidence_API.Controllers
         [HttpGet, Route("check")]
         public Response Check(string keycard)
         {
-            // TODO
-            return null;
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    if (context.Accounts.Where(a => a.Keycard == keycard).Any())
+                        return new Response { Result = CardType.Account };
+                }
+
+                return new Response { Result = new CardAssignation { Type = CardType.Unsigned } };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccountController, Check", null);
+                return new Response { Success = false };
+            }
         }
 
         [HttpPost, Route("register")]
@@ -45,13 +60,6 @@ namespace eVidence_API.Controllers
             }
 
             return new Response();
-        }
-
-        [HttpPost, Route("login")]
-        public Response Login(string keycard)
-        {
-            // TODO
-            return null;
         }
     }
 }

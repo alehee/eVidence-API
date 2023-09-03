@@ -6,9 +6,11 @@ namespace eVidence_API.Context
     public class ApplicationDbContext : DbContext
     {
         public virtual DbSet<Account> Accounts { get; set; }
-        public virtual DbSet<Group> Groups { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
-        public virtual DbSet<TemporaryCards> TemporaryCards { get; set; }
+        public virtual DbSet<Entrance> EntranceHistory { get; set; }
+        public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<TemporaryCard> TemporaryCards { get; set; }
+        public virtual DbSet<TemporaryEntrance> TemporaryEntranceHistory { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace eVidence_API.Models.Context
 {
-    public class TemporaryCards
+    public class TemporaryCard
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
