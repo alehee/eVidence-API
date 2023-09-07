@@ -24,10 +24,13 @@ namespace eVidence_API.Controllers
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // TODO
-                }
+                    var history = context.EntranceHistory.Where(a => a.Account.Id == id);
 
-                return new Response { Result = new CardAssignation { Type = CardType.Unsigned } };
+                    if (!history.Any())
+                        return new Response { Result = null };
+
+                    return new Response { Result = history.OrderBy(a => a.Id).Reverse().First() };
+                }
             }
             catch (Exception ex)
             {
