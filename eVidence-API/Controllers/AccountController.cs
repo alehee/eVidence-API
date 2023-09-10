@@ -38,6 +38,7 @@ namespace eVidence_API.Controllers
             }
         }
 
+        #region Default card
         [HttpPost, Route("register")]
         public Response Register(string keycard, string name, string surname, int departmentId)
         {
@@ -78,5 +79,39 @@ namespace eVidence_API.Controllers
                 return new Response { Success = false };
             }
         }
+
+        #endregion
+
+        #region Temporary Card
+
+        [HttpPost, Route("temporary/register")]
+        public Response TemporaryRegister(string keycard)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    if (context.TemporaryCards.Where(a => a.Keycard == keycard).Any())
+                    {
+                        return new Response { Success = false, Result = "Temporary card already registered" };
+                    }
+
+                    context.TemporaryCards.Add(new TemporaryCard
+                    {
+                        Keycard = keycard
+                    });
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "AccountController, TemporaryRegister", null);
+                    return new Response { Success = false };
+                }
+            }
+
+            return new Response();
+        }
+
+        #endregion
     }
 }

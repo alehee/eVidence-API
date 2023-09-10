@@ -17,6 +17,8 @@ namespace eVidence_API.Controllers
             _logger = logger;
         }
 
+        #region Default cards
+
         [HttpGet, Route("check")]
         public Response Check(int id)
         {
@@ -39,6 +41,28 @@ namespace eVidence_API.Controllers
             }
         }
 
+        public Response Toggle(int id, bool isEntering)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // TODO
+
+                    return new Response();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "EntranceController, Toggle", null);
+                return new Response { Success = false };
+            }
+        }
+
+        #endregion
+
+        #region Temporary cards
+
         [HttpGet, Route("temporary/check")]
         public Response TemporaryCheck(int id)
         {
@@ -46,10 +70,13 @@ namespace eVidence_API.Controllers
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // TODO
-                }
+                    var history = context.TemporaryEntranceHistory.Where(a => a.TemporaryCard.Id == id);
 
-                return new Response { Result = new CardAssignation { Type = CardType.Unsigned } };
+                    if (!history.Any())
+                        return new Response { Result = null };
+
+                    return new Response { Result = history.OrderBy(a => a.Id).Reverse().First() };
+                }
             }
             catch (Exception ex)
             {
@@ -57,5 +84,43 @@ namespace eVidence_API.Controllers
                 return new Response { Success = false };
             }
         }
+
+        public Response TemporaryEnter(int id, string name, string surname)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // TODO
+
+                    return new Response();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "EntranceController, TemporaryEnter", null);
+                return new Response { Success = false };
+            }
+        }
+
+        public Response TemporaryExit(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    // TODO
+
+                    return new Response();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "EntranceController, TemporaryExit", null);
+                return new Response { Success = false };
+            }
+        }
+
+        #endregion
     }
 }
