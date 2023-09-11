@@ -41,13 +41,27 @@ namespace eVidence_API.Controllers
             }
         }
 
+        [HttpPost, Route("toggle")]
         public Response Toggle(int id, bool isEntering)
         {
             try
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // TODO
+                    var account = context.Accounts.Where(a => a.Id == id).Single();
+
+                    if (isEntering)
+                    {
+                        context.EntranceHistory.Add(new Entrance { Account = account, Enter = DateTime.Now });
+                        context.SaveChanges();
+                    }
+
+                    else
+                    {
+                        var row = context.EntranceHistory.Where(a => a.Account == account).OrderBy(a => a.Id).Reverse().First();
+                        row.Exit = DateTime.Now;
+                        context.SaveChanges();
+                    }
 
                     return new Response();
                 }
@@ -85,13 +99,17 @@ namespace eVidence_API.Controllers
             }
         }
 
+        [HttpPost, Route("temporary/enter")]
         public Response TemporaryEnter(int id, string name, string surname)
         {
             try
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // TODO
+                    var temporaryCard = context.TemporaryCards.Where(a => a.Id == id).Single();
+
+                    context.TemporaryEntranceHistory.Add(new TemporaryEntrance { TemporaryCard = temporaryCard, Name = name, Surname = surname, Enter = DateTime.Now });
+                    context.SaveChanges();
 
                     return new Response();
                 }
@@ -103,13 +121,18 @@ namespace eVidence_API.Controllers
             }
         }
 
+        [HttpPost, Route("temporary/exit")]
         public Response TemporaryExit(int id)
         {
             try
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    // TODO
+                    var temporaryCard = context.TemporaryCards.Where(a => a.Id == id).Single();
+
+                    var row = context.TemporaryEntranceHistory.Where(a => a.TemporaryCard == temporaryCard).OrderBy(a => a.Id).Reverse().First();
+                    row.Exit = DateTime.Now;
+                    context.SaveChanges();
 
                     return new Response();
                 }

@@ -39,6 +39,7 @@ namespace eVidence_API.Controllers
         }
 
         #region Default card
+
         [HttpPost, Route("register")]
         public Response Register(string keycard, string name, string surname, int departmentId)
         {
