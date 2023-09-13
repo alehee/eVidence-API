@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eVidence_API.Context;
 
@@ -10,9 +11,10 @@ using eVidence_API.Context;
 namespace eVidence_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230913155038_new-process-2")]
+    partial class newprocess2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -147,43 +149,6 @@ namespace eVidence_API.Migrations
                     b.ToTable("Processes");
                 });
 
-            modelBuilder.Entity("eVidence_API.Models.Context.ProcessHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProcessId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("Stop")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("TemporaryEntranceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("ProcessId");
-
-                    b.HasIndex("TemporaryEntranceId");
-
-                    b.ToTable("ProcessesHistory");
-                });
-
             modelBuilder.Entity("eVidence_API.Models.Context.TemporaryCard", b =>
                 {
                     b.Property<int>("Id")
@@ -275,41 +240,6 @@ namespace eVidence_API.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
-                });
-
-            modelBuilder.Entity("eVidence_API.Models.Context.ProcessHistory", b =>
-                {
-                    b.HasOne("eVidence_API.Models.Context.Account", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eVidence_API.Models.Context.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eVidence_API.Models.Context.Process", "Process")
-                        .WithMany()
-                        .HasForeignKey("ProcessId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("eVidence_API.Models.Context.TemporaryEntrance", "TemporaryEntrance")
-                        .WithMany()
-                        .HasForeignKey("TemporaryEntranceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-
-                    b.Navigation("Department");
-
-                    b.Navigation("Process");
-
-                    b.Navigation("TemporaryEntrance");
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.TemporaryEntrance", b =>

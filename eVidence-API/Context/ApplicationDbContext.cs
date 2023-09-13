@@ -9,6 +9,8 @@ namespace eVidence_API.Context
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Entrance> EntranceHistory { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<Process> Processes { get; set; }
+        public virtual DbSet<ProcessHistory> ProcessesHistory { get; set; }
         public virtual DbSet<TemporaryCard> TemporaryCards { get; set; }
         public virtual DbSet<TemporaryEntrance> TemporaryEntranceHistory { get; set; }
 
