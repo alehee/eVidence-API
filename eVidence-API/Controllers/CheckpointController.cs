@@ -17,6 +17,21 @@ namespace eVidence_API.Controllers
             _logger = logger;
         }
 
-        
+        [HttpGet, Route("check")]
+        public Response Check(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    return new Response { Success = false };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CheckpointController, Check", null);
+                return new Response { Success = false };
+            }
+        }
     }
 }
