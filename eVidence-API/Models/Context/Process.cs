@@ -21,6 +21,6 @@ namespace eVidence_API.Models.Context
         public string ShortName { get; set; }
 
         [Required]
-        public Int32 Color { get; set; } = System.Drawing.Color.Black.ToArgb();
+        public string Color { get; set; }
     }
 }

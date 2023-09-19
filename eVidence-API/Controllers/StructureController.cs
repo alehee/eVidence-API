@@ -151,9 +151,9 @@ namespace eVidence_API.Controllers
                 }
             }
         }
+        #endregion
 
-        /* GroupDepartments area */
-
+        #region GroupDepartment
         [HttpPost, Route("group/{id}/{departmentId}")]
         public Response AddDepartmentToGroup(int id, int departmentId)
         {
