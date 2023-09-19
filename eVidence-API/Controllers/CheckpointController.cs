@@ -24,7 +24,12 @@ namespace eVidence_API.Controllers
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    return new Response { Success = false };
+                    var history = context.ProcessesHistory.Where(a => a.Account.Id == id);
+
+                    if (!history.Any())
+                        return new Response { Result = null };
+
+                    return new Response { Result = history.OrderBy(a => a.Id).Reverse().First() };
                 }
             }
             catch (Exception ex)
