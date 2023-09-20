@@ -38,5 +38,39 @@ namespace eVidence_API.Controllers
                 return new Response { Success = false };
             }
         }
+
+        [HttpPost, Route("/start/{id}")]
+        public Response PostStart(int id, int departmentId, int accountId)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var process = context.Processes.Where(a => a.Id == id);
+
+                    if (!process.Any())
+                        return new Response { Success = false, Result = "Process with this id not exists" };
+
+                    var account = context.Accounts.Where(a => a.Id == accountId);
+
+                    if (!account.Any())
+                        return new Response { Success = false, Result = "Account with this id not exists" };
+
+                    var department = context.Departments.Where(a => a.Id == departmentId);
+
+                    if (!department.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    context.ProcessesHistory.Add(new ProcessHistory { Account = account.Single(), Department = department.Single(), Process = process.Single() });
+
+                    return new();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CheckpointController, PostStart", null);
+                return new Response { Success = false };
+            }
+        }
     }
 }
