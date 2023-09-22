@@ -25,8 +25,19 @@ namespace eVidence_API.Controllers
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    if (context.Accounts.Where(a => a.Keycard == keycard).Any())
-                        return new Response { Result = CardType.Account };
+                    var account = context.Accounts.Where(a => a.Keycard == keycard);
+                    if (account.Any())
+                        return new Response { Result = new CardAssignation { Type = CardType.Account, Instance = account.Single() } };
+
+                    var temporaryCard = context.TemporaryCards.Where(a => a.Keycard == keycard);
+                    if (temporaryCard.Any())
+                    {
+                        var temporaryEntrance = context.TemporaryEntranceHistory.Where(a => a.TemporaryCard == temporaryCard.Single()).Where(a => a.Exit == null);
+                        if (temporaryEntrance.Any())
+                            return new Response { Result = new CardAssignation { Type = CardType.Temporary, Instance = temporaryEntrance.Single() } };
+
+                        return new Response { Result = new CardAssignation { Type = CardType.Temporary } };
+                    }
                 }
 
                 return new Response { Result = new CardAssignation { Type = CardType.Unsigned } };

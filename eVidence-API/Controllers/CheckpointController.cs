@@ -17,15 +17,15 @@ namespace eVidence_API.Controllers
             _logger = logger;
         }
 
+        #region Account
         [HttpGet, Route("check")]
-        public Response Check(int id)
+        public Response GetCheck(int id)
         {
             try
             {
                 using (var context = new ApplicationDbContext())
                 {
                     var history = context.ProcessesHistory.Where(a => a.Account.Id == id);
-
                     if (!history.Any())
                         return new Response { Result = null };
 
@@ -34,12 +34,13 @@ namespace eVidence_API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "CheckpointController, Check", null);
+                _logger.LogError(ex, "CheckpointController, GetCheck", null);
                 return new Response { Success = false };
             }
         }
 
-        [HttpPost, Route("/start/{id}")]
+        
+        [HttpPost, Route("start/{id}")]
         public Response PostStart(int id, int departmentId, int accountId)
         {
             try
@@ -47,21 +48,19 @@ namespace eVidence_API.Controllers
                 using (var context = new ApplicationDbContext())
                 {
                     var process = context.Processes.Where(a => a.Id == id);
-
                     if (!process.Any())
                         return new Response { Success = false, Result = "Process with this id not exists" };
 
                     var account = context.Accounts.Where(a => a.Id == accountId);
-
                     if (!account.Any())
                         return new Response { Success = false, Result = "Account with this id not exists" };
 
                     var department = context.Departments.Where(a => a.Id == departmentId);
-
                     if (!department.Any())
                         return new Response { Success = false, Result = "Department with this id not exists" };
 
                     context.ProcessesHistory.Add(new ProcessHistory { Account = account.Single(), Department = department.Single(), Process = process.Single() });
+                    context.SaveChanges();
 
                     return new();
                 }
@@ -72,5 +71,128 @@ namespace eVidence_API.Controllers
                 return new Response { Success = false };
             }
         }
+
+        [HttpPut, Route("stop")]
+        public Response PutStop(int departmentId, int accountId)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    
+                    var account = context.Accounts.Where(a => a.Id == accountId);
+                    if (!account.Any())
+                        return new Response { Success = false, Result = "Account with this id not exists" };
+
+                    var department = context.Departments.Where(a => a.Id == departmentId);
+                    if (!department.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    var history = context.ProcessesHistory.Where(a => a.Account == account.Single()).Where(a => a.Department == department.Single()).Where(a => a.Stop == null);
+                    if (!history.Any())
+                        return new Response { Success = false, Result = "This account has not any ongoing processes" };
+
+                    history.First().Stop = DateTime.Now;
+                    context.SaveChanges();
+
+                    return new();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CheckpointController, PutStop", null);
+                return new Response { Success = false };
+            }
+        }
+        #endregion
+
+        #region Temporary Card
+        [HttpGet, Route("temporary/check")]
+        public Response GetTemporaryCheck(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var history = context.ProcessesHistory.Where(a => a.TemporaryEntrance.Id == id);
+                    if (!history.Any())
+                        return new Response { Result = null };
+
+                    return new Response { Result = history.OrderBy(a => a.Id).Reverse().First() };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CheckpointController, GetTemporaryCheck", null);
+                return new Response { Success = false };
+            }
+        }
+
+
+        [HttpPost, Route("temporary/start/{id}")]
+        public Response PostTemporaryStart(int id, int departmentId, int temporaryEntranceHistoryId)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var process = context.Processes.Where(a => a.Id == id);
+                    if (!process.Any())
+                        return new Response { Success = false, Result = "Process with this id not exists" };
+
+                    var temporaryEntrance = context.TemporaryEntranceHistory.Where(a => a.Id == temporaryEntranceHistoryId);
+                    if (!temporaryEntrance.Any())
+                        return new Response { Success = false, Result = "TemporaryEntrance with this id not exists" };
+
+                    var department = context.Departments.Where(a => a.Id == departmentId);
+                    if (!department.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    context.ProcessesHistory.Add(new ProcessHistory { TemporaryEntrance = temporaryEntrance.Single(), Department = department.Single(), Process = process.Single() });
+                    context.SaveChanges();
+
+                    return new();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CheckpointController, PostTemporaryStart", null);
+                return new Response { Success = false };
+            }
+        }
+
+        [HttpPut, Route("temporary/stop")]
+        public Response PutTemporaryStop(int departmentId, int temporaryEntranceHistoryId)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+
+                    var temporaryEntrance = context.TemporaryEntranceHistory.Where(a => a.Id == temporaryEntranceHistoryId);
+                    if (!temporaryEntrance.Any())
+                        return new Response { Success = false, Result = "TemporaryEntrance with this id not exists" };
+
+                    var department = context.Departments.Where(a => a.Id == departmentId);
+                    if (!department.Any())
+                        return new Response { Success = false, Result = "Department with this id not exists" };
+
+                    var history = context.ProcessesHistory.Where(a => a.TemporaryEntrance == temporaryEntrance.Single()).Where(a => a.Department == department.Single()).Where(a => a.Stop == null);
+                    if (!history.Any())
+                        return new Response { Success = false, Result = "This temporaryEntrance has not any ongoing processes" };
+
+                    history.First().Stop = DateTime.Now;
+                    context.SaveChanges();
+
+                    return new();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "CheckpointController, PutTemporaryStop", null);
+                return new Response { Success = false };
+            }
+        }
+        #endregion
     }
 }

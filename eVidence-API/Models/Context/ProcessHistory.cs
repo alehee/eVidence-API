@@ -9,10 +9,8 @@ namespace eVidence_API.Models.Context
         [Key]
         public int Id { get; set; }
 
-        [Required]
         public Account? Account { get; set; } = null;
 
-        [Required]
         public TemporaryEntrance? TemporaryEntrance { get; set; } = null;
 
         [Required]
