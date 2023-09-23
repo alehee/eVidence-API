@@ -18,7 +18,7 @@ namespace eVidence_API.Controllers
         }
 
         [HttpPost, Route("")]
-        public Response Add(int groupId, string name, string shortName, string colorCode)
+        public Response PostAdd(int groupId, string name, string shortName, string colorCode)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace eVidence_API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "ProcessController, Check", null);
+                _logger.LogError(ex, "ProcessController, PostAdd", null);
                 return new Response { Success = false };
             }
         }
@@ -65,6 +65,64 @@ namespace eVidence_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ProcessController, Get", null);
+                return new Response { Success = false };
+            }
+        }
+
+        [HttpPut, Route("{id}")]
+        public Response PutUpdate(int id, int groupId, string name, string shortName, string colorCode)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var process = context.Processes.Where(a => a.Id == id);
+                    if (!process.Any())
+                        return new Response { Success = false, Result = "Process with this id not exists" };
+
+                    var group = context.Groups.Where(a => a.Id == groupId);
+                    if (!group.Any())
+                        return new Response { Success = false, Result = "Group with this id not exists" };
+
+                    var singleProcess = process.Single();
+                    var singleGroup = group.Single();
+
+                    singleProcess.Group = singleGroup;
+                    singleProcess.Name = name;
+                    singleProcess.ShortName = shortName;
+                    singleProcess.Color = colorCode;
+                    context.SaveChanges();
+
+                    return new();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ProcessController, PutUpdate", null);
+                return new Response { Success = false };
+            }
+        }
+
+        [HttpDelete, Route("{id}")]
+        public Response Delete(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var process = context.Processes.Where(a => a.Id == id);
+                    if (!process.Any())
+                        return new Response { Success = false, Result = "Process with this id not exists" };
+
+                    context.Processes.Remove(process.Single());
+                    context.SaveChanges();
+
+                    return new();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ProcessController, Delete", null);
                 return new Response { Success = false };
             }
         }
