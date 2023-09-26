@@ -45,8 +45,29 @@ namespace eVidence_API.Controllers
             return new Response();
         }
 
-        [HttpGet, Route("authenticate")]
-        public Response Get(string login, string password)
+        [HttpGet, Route("{id}")]
+        public Response Get(int id)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var administrator = context.Administrators.Where(a => a.Id == id);
+                    if (!administrator.Any())
+                        new Response { Success = false, Result = "No administrator found for this id" };
+
+                    return new Response { Result = administrator.Single() };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "AdministratorController, Get", null);
+                    return new Response { Success = false };
+                }
+            }
+        }
+
+        [HttpPost, Route("authenticate")]
+        public Response Authenticate(string login, string password)
         {
             using (var context = new ApplicationDbContext())
             {
@@ -60,7 +81,7 @@ namespace eVidence_API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "AdministratorController, Get", null);
+                    _logger.LogError(ex, "AdministratorController, Authenticate", null);
                     return new Response { Success = false };
                 }
             }
