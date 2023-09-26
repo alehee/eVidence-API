@@ -6,6 +6,7 @@ namespace eVidence_API.Context
     public class ApplicationDbContext : DbContext
     {
         public virtual DbSet<Account> Accounts { get; set; }
+        public virtual DbSet<Administrator> Administrators { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Entrance> EntranceHistory { get; set; }
         public virtual DbSet<Group> Groups { get; set; }

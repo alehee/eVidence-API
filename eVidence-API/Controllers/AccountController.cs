@@ -25,7 +25,7 @@ namespace eVidence_API.Controllers
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    var account = context.Accounts.Where(a => a.Keycard == keycard);
+                    var account = context.Accounts.Where(a => a.DeletedAt == null).Where(a => a.Keycard == keycard);
                     if (account.Any())
                         return new Response { Result = new CardAssignation { Type = CardType.Account, Instance = account.Single() } };
 
