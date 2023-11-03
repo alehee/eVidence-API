@@ -65,7 +65,7 @@ namespace eVidence_API.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Administrator", b =>
@@ -99,7 +99,7 @@ namespace eVidence_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Administrators");
+                    b.ToTable("Administrators", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Department", b =>
@@ -114,7 +114,7 @@ namespace eVidence_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Entrance", b =>
@@ -136,7 +136,7 @@ namespace eVidence_API.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("EntranceHistory");
+                    b.ToTable("EntranceHistory", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Group", b =>
@@ -151,7 +151,7 @@ namespace eVidence_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.Process", b =>
@@ -179,7 +179,7 @@ namespace eVidence_API.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.ToTable("Processes");
+                    b.ToTable("Processes", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.ProcessHistory", b =>
@@ -216,7 +216,7 @@ namespace eVidence_API.Migrations
 
                     b.HasIndex("TemporaryEntranceId");
 
-                    b.ToTable("ProcessesHistory");
+                    b.ToTable("ProcessesHistory", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.TemporaryCard", b =>
@@ -231,7 +231,7 @@ namespace eVidence_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TemporaryCards");
+                    b.ToTable("TemporaryCards", (string)null);
                 });
 
             modelBuilder.Entity("eVidence_API.Models.Context.TemporaryEntrance", b =>
@@ -261,7 +261,7 @@ namespace eVidence_API.Migrations
 
                     b.HasIndex("TemporaryCardId");
 
-                    b.ToTable("TemporaryEntranceHistory");
+                    b.ToTable("TemporaryEntranceHistory", (string)null);
                 });
 
             modelBuilder.Entity("DepartmentGroup", b =>

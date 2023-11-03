@@ -32,11 +32,7 @@ namespace eVidence_API.Controllers
                     var temporaryCard = context.TemporaryCards.Where(a => a.Keycard == keycard);
                     if (temporaryCard.Any())
                     {
-                        var temporaryEntrance = context.TemporaryEntranceHistory.Where(a => a.TemporaryCard == temporaryCard.Single()).Where(a => a.Exit == null);
-                        if (temporaryEntrance.Any())
-                            return new Response { Result = new CardAssignation { Type = CardType.Temporary, Instance = temporaryEntrance.Single() } };
-
-                        return new Response { Result = new CardAssignation { Type = CardType.Temporary } };
+                        return new Response { Result = new CardAssignation { Type = CardType.Temporary, Instance = temporaryCard.Single() } };
                     }
                 }
 

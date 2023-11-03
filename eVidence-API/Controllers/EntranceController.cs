@@ -3,6 +3,7 @@ using eVidence_API.Enums;
 using eVidence_API.Models.Context;
 using eVidence_API.Models.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eVidence_API.Controllers
 {
@@ -53,15 +54,14 @@ namespace eVidence_API.Controllers
                     if (isEntering)
                     {
                         context.EntranceHistory.Add(new Entrance { Account = account, Enter = DateTime.Now });
-                        context.SaveChanges();
                     }
 
                     else
                     {
                         var row = context.EntranceHistory.Where(a => a.Account == account).OrderBy(a => a.Id).Reverse().First();
                         row.Exit = DateTime.Now;
-                        context.SaveChanges();
                     }
+                    context.SaveChanges();
 
                     return new Response();
                 }
@@ -84,7 +84,7 @@ namespace eVidence_API.Controllers
             {
                 using (var context = new ApplicationDbContext())
                 {
-                    var history = context.TemporaryEntranceHistory.Where(a => a.TemporaryCard.Id == id);
+                    var history = context.TemporaryEntranceHistory.Where(a => a.TemporaryCard.Id == id).Include("TemporaryCard");
 
                     if (!history.Any())
                         return new Response { Result = null };
