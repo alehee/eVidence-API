@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using eVidence_API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "corsPolicy",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000");
+            policy.WithOrigins(eVidence_API.Environment.FRONT_ADDRESS);
         });
 });
 
@@ -33,4 +34,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run("https://localhost:7171");
+app.Run(eVidence_API.Environment.IP_ADDRESS);

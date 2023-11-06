@@ -17,7 +17,7 @@ namespace eVidence_API.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL("server=localhost;database=evidence;uid=evidence;pwd=3Vidence;");
+            optionsBuilder.UseMySQL(Environment.DB_CONNECTION_STRING);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
