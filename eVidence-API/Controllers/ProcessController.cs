@@ -4,6 +4,7 @@ using eVidence_API.Models.Context;
 using eVidence_API.Models.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace eVidence_API.Controllers
 {
@@ -83,6 +84,27 @@ namespace eVidence_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ProcessController, Get", null);
+                return new Response { Success = false };
+            }
+        }
+
+        [HttpGet, Route("group/{id}")]
+        public Response GetByGroup(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var group = context.Groups.Where(a => a.Id == id);
+                    if (!group.Any())
+                        return new Response { Success = false, Result = "Group with this id not exists" };
+
+                    return new Response { Result = context.Processes.Where(a => a.Group == group.Single()).ToArray() };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ProcessController, GetByGroup", id);
                 return new Response { Success = false };
             }
         }
