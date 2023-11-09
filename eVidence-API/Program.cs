@@ -8,7 +8,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "corsPolicy",
         policy =>
         {
-            policy.WithOrigins(eVidence_API.Environment.FRONT_ADDRESS);
+            policy.WithOrigins(eVidence_API.Environment.FRONT_ADDRESS).AllowAnyMethod();
         });
 });
 
