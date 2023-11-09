@@ -3,6 +3,7 @@ using eVidence_API.Enums;
 using eVidence_API.Models.Context;
 using eVidence_API.Models.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eVidence_API.Controllers
 {
@@ -41,6 +42,23 @@ namespace eVidence_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "ProcessController, PostAdd", null);
+                return new Response { Success = false };
+            }
+        }
+
+        [HttpGet, Route("")]
+        public Response GetAll()
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    return new Response { Result = context.Processes.Include("Group").ToArray() };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ProcessController, GetAll", null);
                 return new Response { Success = false };
             }
         }

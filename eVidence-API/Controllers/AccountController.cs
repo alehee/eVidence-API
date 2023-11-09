@@ -4,6 +4,7 @@ using eVidence_API.Models.Helpers;
 using eVidence_API.Context;
 using System.Xml.Linq;
 using eVidence_API.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace eVidence_API.Controllers
 {
@@ -71,6 +72,23 @@ namespace eVidence_API.Controllers
             return new Response();
         }
 
+        [HttpGet, Route("")]
+        public Response GetAllAccounts()
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    return new Response { Result = context.Accounts.Include("Department").ToArray() };
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "AccountController, GetAllAccounts", null);
+                return new Response { Success = false };
+            }
+        }
+
         [HttpGet, Route("{id}")]
         public Response GetAccount(int id)
         {
@@ -83,7 +101,7 @@ namespace eVidence_API.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "AccountController, GetAccount", null);
+                _logger.LogError(ex, "AccountController, GetAccount", id);
                 return new Response { Success = false };
             }
         }
