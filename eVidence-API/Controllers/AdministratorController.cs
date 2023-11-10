@@ -4,6 +4,7 @@ using eVidence_API.Models.Helpers;
 using eVidence_API.Context;
 using System.Xml.Linq;
 using eVidence_API.Enums;
+using eVidence_API.Services;
 
 namespace eVidence_API.Controllers
 {
@@ -27,7 +28,7 @@ namespace eVidence_API.Controllers
                 {
                     context.Administrators.Add(new Administrator { 
                         Login = login, 
-                        Password = password,
+                        Password = HashService.CreateHash(password),
                         PermissionAdministrator = permissionAdministrator,
                         PermissionUser = permissionUser, 
                         PermissionProcess = permissionProcess, 
@@ -54,7 +55,7 @@ namespace eVidence_API.Controllers
                 {
                     var administrator = context.Administrators.Where(a => a.Id == id);
                     if (!administrator.Any())
-                        new Response { Success = false, Result = "No administrator found for this id" };
+                        return new Response { Success = false, Result = "No administrator found for this id" };
 
                     return new Response { Result = administrator.Single() };
                 }
@@ -73,9 +74,12 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
-                    var administrator = context.Administrators.Where(a => a.Login == login && a.Password == password);
+                    var administrator = context.Administrators.Where(a => a.Login == login);
                     if (!administrator.Any())
-                        new Response { Success = false, Result = "No administrator found for the credentials" };
+                        return new Response { Success = false, Result = "No administrator found for the credentials" };
+
+                    if (!HashService.VerifyHash(password, administrator.Single().Password))
+                        return new Response { Success = false, Result = "Password incorrect" };
 
                     return new Response { Result = administrator.Single() };
                 }
@@ -96,7 +100,7 @@ namespace eVidence_API.Controllers
                 {
                     var administrator = context.Administrators.Where(a => a.Id == id);
                     if (!administrator.Any())
-                        new Response { Success = false, Result = "No administrator found for the credentials" };
+                        return new Response { Success = false, Result = "No administrator found for the credentials" };
 
                     var singleAdministrator = administrator.Single();
                     singleAdministrator.Login = login;
@@ -126,7 +130,7 @@ namespace eVidence_API.Controllers
                 {
                     var administrator = context.Administrators.Where(a => a.Id == id);
                     if (!administrator.Any())
-                        new Response { Success = false, Result = "No administrator found for the credentials" };
+                        return new Response { Success = false, Result = "No administrator found for the credentials" };
 
                     context.Administrators.Remove(administrator.Single());
                     context.SaveChanges();
