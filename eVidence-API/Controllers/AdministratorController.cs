@@ -5,6 +5,7 @@ using eVidence_API.Context;
 using System.Xml.Linq;
 using eVidence_API.Enums;
 using eVidence_API.Services;
+using System.Reflection;
 
 namespace eVidence_API.Controllers
 {
@@ -26,6 +27,11 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
+                    if (context.Administrators.Where(a => a.Login == login).Any())
+                    {
+                        return new Response { Success = false, Result = "Administrator with this login already exists" };
+                    }
+
                     context.Administrators.Add(new Administrator { 
                         Login = login, 
                         Password = HashService.CreateHash(password),
@@ -38,12 +44,29 @@ namespace eVidence_API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "AdministratorController, Create", null);
+                    _logger.LogError(ex, $"AdministratorController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
                     return new Response { Success = false };
                 }
             }
 
             return new Response();
+        }
+
+        [HttpGet, Route("")]
+        public Response GetAll()
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    return new Response { Result = context.Administrators.ToArray() };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"AdministratorController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
         }
 
         [HttpGet, Route("{id}")]
@@ -61,7 +84,7 @@ namespace eVidence_API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "AdministratorController, Get", null);
+                    _logger.LogError(ex, $"AdministratorController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
                     return new Response { Success = false };
                 }
             }
@@ -85,7 +108,34 @@ namespace eVidence_API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "AdministratorController, Authenticate", null);
+                    _logger.LogError(ex, $"AdministratorController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
+        [HttpPost, Route("changepassword")]
+        public Response ChangePassword(string login, string oldPassword, string newPassword)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var administrator = context.Administrators.Where(a => a.Login == login);
+                    if (!administrator.Any())
+                        return new Response { Success = false, Result = "No administrator found for the credentials" };
+
+                    if (!HashService.VerifyHash(oldPassword, administrator.Single().Password))
+                        return new Response { Success = false, Result = "Password is incorect" };
+
+                    administrator.Single().Password = HashService.CreateHash(newPassword);
+                    context.SaveChanges();
+
+                    return new ();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"AdministratorController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
                     return new Response { Success = false };
                 }
             }
