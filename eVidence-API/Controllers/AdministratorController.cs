@@ -142,7 +142,7 @@ namespace eVidence_API.Controllers
         }
 
         [HttpPut, Route("{id}")]
-        public Response Edit(int id, string login, string password, bool permissionAdministrator, bool permissionUser, bool permissionProcess, bool permissionReport)
+        public Response Edit(int id, string login, bool permissionAdministrator, bool permissionUser, bool permissionProcess, bool permissionReport)
         {
             using (var context = new ApplicationDbContext())
             {
@@ -154,7 +154,6 @@ namespace eVidence_API.Controllers
 
                     var singleAdministrator = administrator.Single();
                     singleAdministrator.Login = login;
-                    singleAdministrator.Password = password;
                     singleAdministrator.PermissionAdministrator = permissionAdministrator;
                     singleAdministrator.PermissionUser = permissionUser;
                     singleAdministrator.PermissionProcess = permissionProcess;
