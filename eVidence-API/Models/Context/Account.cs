@@ -19,7 +19,7 @@ namespace eVidence_API.Models.Context
         public string Surname { get; set; }
 
         [Required]
-        public string Keycard { get; set; }
+        public string? Keycard { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; init; } = DateTime.Now;

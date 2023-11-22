@@ -5,6 +5,7 @@ using eVidence_API.Context;
 using System.Xml.Linq;
 using eVidence_API.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace eVidence_API.Controllers
 {
@@ -106,16 +107,94 @@ namespace eVidence_API.Controllers
             }
         }
 
+        [HttpPut, Route("{id}")]
+        public Response Edit(int id, int departmentId, string name, string surname, string keycard)
+        {
+            try
+            {
+                using(var context = new ApplicationDbContext())
+                {
+                    var account = context.Accounts.Where(a => a.Id == id);
+                    if (!account.Any())
+                        return new Response { Success = false, Result = "No account found for the id" };
+
+                    var department = context.Departments.Where(a => a.Id == departmentId);
+                    if (!department.Any())
+                        return new Response { Success = false, Result = "No department found for the id" };
+
+                    var singleAccount = account.Single();
+                    singleAccount.Name = name;
+                    singleAccount.Surname = surname;
+                    singleAccount.Department = department.Single();
+                    singleAccount.Keycard = keycard;
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
+            }
+
+            return new ();
+        }
+
+        [HttpPatch, Route("{id}/resetkeycard")]
+        public Response ResetKeycard(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var account = context.Accounts.Where(a => a.Id == id);
+                    if (!account.Any())
+                        return new Response { Success = false, Result = "No account found for the id" };
+
+                    account.Single().Keycard = null;
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
+            }
+            return new();
+        }
+
+        [HttpDelete, Route("{id}")]
+        public Response Delete(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var account = context.Accounts.Where(a => a.Id == id);
+                    if (!account.Any())
+                        return new Response { Success = false, Result = "No account found for the id" };
+
+                    context.Accounts.Remove(account.Single());
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
+            }
+            return new();
+        }
+
         #endregion
 
         #region Temporary Card
 
-        [HttpPost, Route("temporary/register")]
-        public Response TemporaryRegister(string keycard)
+        [HttpPost, Route("temporary/card")]
+        public Response TemporaryKeycardCreate(string keycard)
         {
-            using (var context = new ApplicationDbContext())
+            try
             {
-                try
+                using (var context = new ApplicationDbContext())
                 {
                     if (context.TemporaryCards.Where(a => a.Keycard == keycard).Any())
                     {
@@ -128,14 +207,38 @@ namespace eVidence_API.Controllers
                     });
                     context.SaveChanges();
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "AccountController, TemporaryRegister", null);
-                    return new Response { Success = false };
-                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
             }
 
-            return new Response();
+            return new ();
+        }
+
+        [HttpPatch, Route("temporary/{id}/resetkeycard")]
+        public Response TemporaryKeycardReset(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var temporaryCard = context.TemporaryCards.Where(a => a.Id == id);
+                    if (!temporaryCard.Any())
+                        return new Response { Success = false, Result = "No temporary card for the id" };
+
+                    temporaryCard.Single().Keycard = null;
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
+            }
+
+            return new ();
         }
 
         #endregion
