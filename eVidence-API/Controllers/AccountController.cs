@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using eVidence_API.Models.Context;
 using eVidence_API.Models.Helpers;
 using eVidence_API.Context;
-using System.Xml.Linq;
 using eVidence_API.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -108,7 +107,7 @@ namespace eVidence_API.Controllers
         }
 
         [HttpPut, Route("{id}")]
-        public Response Edit(int id, int departmentId, string name, string surname, string keycard)
+        public Response Edit(int id, int departmentId, string name, string surname)
         {
             try
             {
@@ -126,7 +125,6 @@ namespace eVidence_API.Controllers
                     singleAccount.Name = name;
                     singleAccount.Surname = surname;
                     singleAccount.Department = department.Single();
-                    singleAccount.Keycard = keycard;
                     context.SaveChanges();
                 }
             }
