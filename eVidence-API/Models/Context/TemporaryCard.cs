@@ -10,7 +10,6 @@ namespace eVidence_API.Models.Context
         [Key]
         public int Id { get; set; }
 
-        [Required]
         public string? Keycard { get; set; }
     }
 }

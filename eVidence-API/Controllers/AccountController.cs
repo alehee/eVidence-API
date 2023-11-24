@@ -189,7 +189,43 @@ namespace eVidence_API.Controllers
 
         #region Temporary Card
 
-        [HttpPost, Route("temporary/card")]
+        [HttpGet, Route("temporary")]
+        public Response TemporaryGetAll()
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    return new Response { Result = context.TemporaryCards.ToArray() };
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
+            }
+        }
+
+        [HttpGet, Route("temporary/used")]
+        public Response TemporaryGetUsed()
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var temporaryEntranceActive = context.TemporaryEntranceHistory.Where(a => a.Exit == null);
+
+                    return new Response { Result = temporaryEntranceActive.Select(a => a.TemporaryCard).ToArray() };
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
+            }
+        }
+
+        [HttpPost, Route("temporary")]
         public Response TemporaryKeycardCreate(string keycard)
         {
             try
@@ -197,9 +233,10 @@ namespace eVidence_API.Controllers
                 using (var context = new ApplicationDbContext())
                 {
                     if (context.TemporaryCards.Where(a => a.Keycard == keycard).Any())
-                    {
-                        return new Response { Success = false, Result = "Temporary card already registered" };
-                    }
+                        return new Response { Success = false, Result = "Temporary card is already registered" };
+
+                    if (context.Accounts.Where(a => a.Keycard == keycard).Any())
+                        return new Response { Success = false, Result = "Keycard is already registered" };
 
                     context.TemporaryCards.Add(new TemporaryCard
                     {
@@ -239,6 +276,30 @@ namespace eVidence_API.Controllers
             }
 
             return new ();
+        }
+
+        [HttpDelete, Route("temporary/{id}")]
+        public Response TemporaryKeycardDelete(int id)
+        {
+            try
+            {
+                using (var context = new ApplicationDbContext())
+                {
+                    var temporaryCard = context.TemporaryCards.Where(a => a.Id == id);
+                    if (!temporaryCard.Any())
+                        return new Response { Success = false, Result = "No temporary card for the id" };
+
+                    context.TemporaryCards.Remove(temporaryCard.Single());
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"AccountController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                return new Response { Success = false };
+            }
+
+            return new();
         }
 
         #endregion

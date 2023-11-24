@@ -21,7 +21,7 @@ namespace eVidence_API.Controllers
         }
 
         [HttpPost, Route("")]
-        public Response Create(string login, string password, bool permissionAdministrator, bool permissionUser, bool permissionProcess, bool permissionReport)
+        public Response Create(string login, string password, bool permissionAdministrator = false, bool permissionUser = false, bool permissionProcess = false, bool permissionReport = false)
         {
             using (var context = new ApplicationDbContext())
             {
@@ -132,6 +132,30 @@ namespace eVidence_API.Controllers
                     context.SaveChanges();
 
                     return new ();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"AdministratorController, {MethodBase.GetCurrentMethod()}", MethodBase.GetCurrentMethod().GetParameters());
+                    return new Response { Success = false };
+                }
+            }
+        }
+
+        [HttpPost, Route("{id}/resetpassword")]
+        public Response ResetPassword(int id)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                try
+                {
+                    var administrator = context.Administrators.Where(a => a.Id == id);
+                    if (!administrator.Any())
+                        return new Response { Success = false, Result = "No administrator found for the id" };
+
+                    administrator.Single().Password = HashService.CreateHash(administrator.Single().Login);
+                    context.SaveChanges();
+
+                    return new();
                 }
                 catch (Exception ex)
                 {
