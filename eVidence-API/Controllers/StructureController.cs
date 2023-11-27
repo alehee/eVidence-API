@@ -102,7 +102,7 @@ namespace eVidence_API.Controllers
             }
         }
 
-        [HttpPost, Route("group/{id}/edit")]
+        [HttpPut, Route("group/{id}")]
         public Response EditGroup(int id, string name)
         {
             using (var context = new ApplicationDbContext())
@@ -297,7 +297,7 @@ namespace eVidence_API.Controllers
             }
         }
 
-        [HttpPost, Route("department/{id}/edit")]
+        [HttpPut, Route("department/{id}")]
         public Response EditDepartment(int id, string name)
         {
             using (var context = new ApplicationDbContext())
