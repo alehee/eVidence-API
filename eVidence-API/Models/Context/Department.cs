@@ -13,7 +13,6 @@ namespace eVidence_API.Models.Context
         [Required]
         public string Name { get; set; }
 
-        [JsonIgnore]
         public ICollection<Group> Groups { get; set; }
     }
 }

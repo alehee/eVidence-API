@@ -170,7 +170,7 @@ namespace eVidence_API.Controllers
                     if (!departments.Any())
                         return new Response { Success = false, Result = "Department with this id not exists" };
 
-                    context.Groups.Where(a => a.Id == id).Include("Departments").Single().Departments.Add(departments.Single());
+                    groups.Single().Departments.Add(departments.Single());
                     context.SaveChanges();
 
                     return new Response();
@@ -190,7 +190,7 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
-                    var groups = context.Groups.Where(a => a.Id == id);
+                    var groups = context.Groups.Where(a => a.Id == id).Include("Departments");
                     var departments = context.Departments.Where(a => a.Id == departmentId);
 
                     if (!groups.Any())
@@ -199,7 +199,7 @@ namespace eVidence_API.Controllers
                     if (!departments.Any())
                         return new Response { Success = false, Result = "Department with this id not exists" };
 
-                    context.Groups.Where(a => a.Id == id).Single().Departments.Remove(departments.Single());
+                    groups.Single().Departments.Remove(departments.Single());
                     context.SaveChanges();
 
                     return new Response();
@@ -221,7 +221,7 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
-                    return new Response { Result = context.Departments.ToArray() };
+                    return new Response { Result = context.Departments.Include("Groups").ToArray() };
                 }
                 catch (Exception ex)
                 {
