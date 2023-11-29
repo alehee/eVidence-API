@@ -37,7 +37,7 @@ namespace eVidence_API.Controllers
             }
         }
 
-        [HttpPost, Route("group/add")]
+        [HttpPost, Route("group")]
         public Response AddGroup(string name)
         {
             using (var context = new ApplicationDbContext())
@@ -231,7 +231,7 @@ namespace eVidence_API.Controllers
             }
         }
 
-        [HttpPost, Route("department/add")]
+        [HttpPost, Route("department")]
         public Response AddDepartment(string name)
         {
             using (var context = new ApplicationDbContext())
