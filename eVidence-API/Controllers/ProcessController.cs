@@ -33,7 +33,6 @@ namespace eVidence_API.Controllers
                         return new Response { Success = false, Result = "Group with this id not exists" };
                     }
 
-                    System.Console.WriteLine(colorCode.Remove(0, 1));
                     context.Processes.Add(new Process { Group = group.Single(), Name = name, ShortName = shortName, Color = colorCode });
                     context.SaveChanges();
 
@@ -110,7 +109,7 @@ namespace eVidence_API.Controllers
         }
 
         [HttpPut, Route("{id}")]
-        public Response PutUpdate(int id, int groupId, string name, string shortName, string colorCode)
+        public Response PutUpdate(int id, string name, string shortName, string colorCode)
         {
             try
             {
@@ -120,14 +119,7 @@ namespace eVidence_API.Controllers
                     if (!process.Any())
                         return new Response { Success = false, Result = "Process with this id not exists" };
 
-                    var group = context.Groups.Where(a => a.Id == groupId);
-                    if (!group.Any())
-                        return new Response { Success = false, Result = "Group with this id not exists" };
-
                     var singleProcess = process.Single();
-                    var singleGroup = group.Single();
-
-                    singleProcess.Group = singleGroup;
                     singleProcess.Name = name;
                     singleProcess.ShortName = shortName;
                     singleProcess.Color = colorCode;
