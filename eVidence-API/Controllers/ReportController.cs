@@ -26,8 +26,8 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
-                    var accountHistoryOnBoard = context.EntranceHistory.Where(a => a.Exit == null).Include("Account").ToList();
-                    var temporaryHistoryOnBoard = context.TemporaryEntranceHistory.Where(a => a.Exit == null).ToList();
+                    var accountHistoryOnBoard = context.EntranceHistory.Where(a => a.Exit == null).Include(a => a.Account).ThenInclude(a => a.Department).ToList();
+                    var temporaryHistoryOnBoard = context.TemporaryEntranceHistory.Where(a => a.Exit == null).Include("TemporaryCard").ToList();
 
                     return new Response { Result = new ReportEntrance { AccountEntrances = accountHistoryOnBoard, TemporaryEntrances = temporaryHistoryOnBoard } };
                 }
