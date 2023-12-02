@@ -27,7 +27,7 @@ namespace eVidence_API.Controllers
                 try
                 {
                     var accountHistoryOnBoard = context.EntranceHistory.Where(a => a.Exit == null).Include(a => a.Account).ThenInclude(a => a.Department).ToList();
-                    var temporaryHistoryOnBoard = context.TemporaryEntranceHistory.Where(a => a.Exit == null).Include("TemporaryCard").ToList();
+                    var temporaryHistoryOnBoard = context.TemporaryEntranceHistory.Where(a => a.Exit == null).Include(a => a.TemporaryCard).ToList();
 
                     return new Response { Result = new ReportEntrance { AccountEntrances = accountHistoryOnBoard, TemporaryEntrances = temporaryHistoryOnBoard } };
                 }
@@ -46,8 +46,8 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
-                    var accountHistoryOnBoard = context.EntranceHistory.Where(a => a.Enter >= start).Where(a => a.Enter <= stop).Include("Account").ToList();
-                    var temporaryHistoryOnBoard = context.TemporaryEntranceHistory.Where(a => a.Enter >= start).Where(a => a.Enter <= stop).ToList();
+                    var accountHistoryOnBoard = context.EntranceHistory.Where(a => a.Enter >= start).Where(a => a.Enter <= stop).Include(a => a.Account).ThenInclude(a => a.Department).ToList();
+                    var temporaryHistoryOnBoard = context.TemporaryEntranceHistory.Where(a => a.Enter >= start).Where(a => a.Enter <= stop).Include(a => a.TemporaryCard).ToList();
 
                     return new Response { Result = new ReportEntrance { AccountEntrances = accountHistoryOnBoard, TemporaryEntrances = temporaryHistoryOnBoard } };
                 }
@@ -66,7 +66,13 @@ namespace eVidence_API.Controllers
             {
                 try
                 {
-                    var processesHistory = context.ProcessesHistory.Where(a => a.Start >= start).Where(a => a.Start <= stop).Include("Account").Include("TemporaryEntrance").ToList();
+                    var processesHistory = context.ProcessesHistory
+                        .Where(a => a.Start >= start).Where(a => a.Start <= stop)
+                        .Include(a => a.Account)
+                        .ThenInclude(a => a.Department)
+                        .Include(a => a.TemporaryEntrance)
+                        .ThenInclude(a => a.TemporaryCard)
+                        .ToList();
 
                     return new Response { Result = processesHistory };
                 }
