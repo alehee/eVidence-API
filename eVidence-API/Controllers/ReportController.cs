@@ -72,6 +72,7 @@ namespace eVidence_API.Controllers
                         .ThenInclude(a => a.Department)
                         .Include(a => a.TemporaryEntrance)
                         .ThenInclude(a => a.TemporaryCard)
+                        .Include(a => a.Process)
                         .ToList();
 
                     return new Response { Result = processesHistory };
